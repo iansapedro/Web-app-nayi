@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Shop - Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Coffee Shop</h1>
+        <nav>
+            <ul>
+                <li><a href="index.php">Home</a></li>
+                <li><a href="#">Menu</a></li>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    function dbConnect() {
+        $servername = "localhost";
+        $username = "root";
+        $password = "";
+        $dbname = "coffee_shop";  // Replace with your database name
+
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+        return $conn;
+    }
+
+    // Function to get featured products
+    function getFeaturedProducts() {
+        $sql = "SELECT name, price FROM products WHERE featured = 1";
+        $result = runQuery($sql);
+        return $result;
+    }
+
+    // Function to run queries
+    function runQuery($sql) {
+        $conn = dbConnect();
+        $result = $conn->query($sql);
+
+        if ($result === FALSE) {
+            echo "Error: " . $conn->error;
+        }
+
+        $conn->close();
+        return $result;
+    }
+?>
+
+<main>
+    <section>
+        <h2>Featured Products</h2>
+        <?php
+            // Get featured products and display them
+            $featuredProducts = getFeaturedProducts();
+            if ($featuredProducts->num_rows > 0) {
+                while ($product = $featuredProducts->fetch_assoc()) {
+                    echo "<p>" . $product['name'] . " - $" . $product['price'] . "</p>";
+                }
+            } else {
+                echo "<p>No featured products available.</p>";
+            }
+        ?>
+    </section>
+
+    <section>
+        <h2>About Our Coffee Shop</h2>
+        <p>Welcome to our coffee shop! We offer a wide selection of freshly brewed coffee and pastries. Visit us to experience the best coffee in town!</p>
+    </section>
+</main>
+
+<?php
+    // Include the footer
+    include('includes/footer.php');
+?>
+
+ <footer>
+        <p>&copy; 2024 Coffee Shop. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
