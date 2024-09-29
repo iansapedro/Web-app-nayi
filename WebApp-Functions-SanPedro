@@ -1,0 +1,57 @@
+<?php
+// Function to connect to the database
+function dbConnect() {
+    $servername = "localhost";  // Replace with your server details
+    $username = "root";         // Replace with your database username
+    $password = "";             // Replace with your database password
+    $dbname = "coffee_shop";    // Replace with your database name
+
+    // Create the connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    // Check if connection succeeded
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+    return $conn;
+}
+
+// Function to execute a query
+function runQuery($sql) {
+    $conn = dbConnect();
+    $result = $conn->query($sql);
+
+    if ($result === FALSE) {
+        echo "Error: " . $conn->error;
+    }
+
+    $conn->close();  // Close the connection when done
+    return $result;
+}
+
+// Function to get all products from the 'products' table
+function getProducts() {
+    $sql = "SELECT name, price FROM products";
+    $result = runQuery($sql);
+
+    // Check if there are any results
+    if ($result->num_rows > 0) {
+        // Return all results as an array
+        return $result->fetch_all(MYSQLI_ASSOC);
+    } else {
+        return [];
+    }
+}
+
+// Main code that calls the function and displays the products
+$products = getProducts();
+
+if (count($products) > 0) {
+    echo "<h2>Available Products:</h2>";
+    foreach ($products as $product) {
+        echo "Product: " . $product["name"] . " - Price: " . $product["price"] . "<br>";
+    }
+} else {
+    echo "No products available.";
+}
+?>
